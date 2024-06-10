@@ -6,6 +6,7 @@ import numpy as np
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import torch
 from fuzzywuzzy import fuzz
+from concurrent.futures import ThreadPoolExecutor
 
 # Initialize the GPT-2 model and tokenizer
 tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
@@ -28,11 +29,11 @@ def extract_text_from_pdf(pdf_path):
     return pdf_text
 
 # Function to extract images from PDF using PyMuPDF and perform OCR using EasyOCR
-def extract_text_from_images(pdf_path):
-    reader = easyocr.Reader(['en'])  # Specify the language(s) for OCR
+def extract_text_from_images(pdf_path, max_pages=5):
+    reader = easyocr.Reader(['en'], gpu=True)  # Enable GPU if available
     doc = fitz.open(pdf_path)
     image_text = ""
-    for page_num in range(len(doc)):
+    for page_num in range(min(len(doc), max_pages)):
         page = doc.load_page(page_num)
         images = page.get_images(full=True)
         for img_index, img in enumerate(images):
@@ -84,14 +85,19 @@ def categorize_pdf(text):
     text_lower = text.lower()
     for category, keywords in categories.items():
         for keyword in keywords:
-            if fuzz.partial_ratio(text_lower, keyword.lower()) > 70:  # Using a threshold for fuzzy matching
+            if fuzz.partial_ratio(text_lower, keyword.lower()) > 80:  # Using a threshold for fuzzy matching
                 return category
     return "Unknown Type"
 
 # Main function
 def main(pdf_path):
-    pdf_text = extract_text_from_pdf(pdf_path)
-    image_text = extract_text_from_images(pdf_path)
+    with ThreadPoolExecutor() as executor:
+        future_pdf_text = executor.submit(extract_text_from_pdf, pdf_path)
+        future_image_text = executor.submit(extract_text_from_images, pdf_path)
+
+        pdf_text = future_pdf_text.result()
+        image_text = future_image_text.result()
+
     combined_text = pdf_text + "\n" + image_text
     filtered_text = filter_non_english_words(combined_text)
     corrected_text = correct_text_spacing(filtered_text)
@@ -99,5 +105,5 @@ def main(pdf_path):
     print("PDF Type:", pdf_type)
 
 # Example usage
-pdf_path = "C:\\Users\\i_sar\\OneDrive\\Desktop\\Resume_Authourizer\\Test_cases\\ashishnaik123.pdf"
+pdf_path = "C:\\Users\\i_sar\\OneDrive\\Desktop\\Resume_Authourizer\\Test_cases\\Enactathon Runner Up Certi.pdf"
 main(pdf_path)
