@@ -1,55 +1,73 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
-import time
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
-from selenium import webdriver
+import smtplib
 
+# Setup Chrome options
+options = Options()
+options.add_argument("--start-maximized")
+options.add_argument("--enable-local-storage")  # Ensuring local storage is enabled
 
-
+# Specify the path to the ChromeDriver executable
 service = Service(executable_path="C:\\Users\\i_sar\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe")
-options = webdriver.ChromeOptions()
+
+# Initialize the WebDriver
 driver = webdriver.Chrome(service=service, options=options)
 
-# Use the correct parameter 'executable_path' for specifying the driver executable path
-
+# Navigate to the login page
 driver.get('https://eazeplace.com/login')
 
-# Find and fill in the login form fields
+# Wait for the login fields to be present and fill them in
 username_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'email')))
-password_field = WebDriverWait(driver, 1).until(EC.presence_of_element_located((By.ID, 'password')))
+password_field = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, 'password')))
 
 username_field.send_keys('ravihalbharat@gmail.com')
-password_field.send_keys('your_password')
+password_field.send_keys('ravihalbharat')
 
 # Submit the form
-login_button = WebDriverWait(driver, 1).until(EC.element_to_be_clickable((By.CLASS_NAME, 'sign-in-btn')))
+login_button = WebDriverWait(driver, 15).until(EC.element_to_be_clickable((By.CLASS_NAME, 'sign-in-btn')))
 login_button.click()
 
 # Wait for the login process to complete
-# Add necessary waits or conditions here
+WebDriverWait(driver, 15).until(EC.url_changes('https://eazeplace.com/login'))
 
-# Navigate to the desired URL
+# Navigate to the desired URL after login
 driver.get('https://eazeplace.com/eazeuvtovf')
 
-# To prevent session timeout
-driver.execute_script("window.focus();")
-driver.execute_script("window.onfocus=function(){};")
+# Wait for the parent div to be present
+wait = WebDriverWait(driver, 30)
+parent_div = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'cardwrap')))
 
 
-wait = WebDriverWait(driver, 5)
 
-# Find the third div with class 'literator' under the parent div
-parent_div = wait.until(EC.presence_of_element_located((By.CLASS_NAME, 'activeinternlist')))
-div_elements = parent_div.find_elements_by_class_name('literator')
+email ="EazePlaceSupp22@gmail.com"
 
+# Find the third div with class 'literator'
+div_elements = parent_div.find_elements(By.CLASS_NAME, 'literator')
 # Check if there are at least 3 div elements with class 'literator'
-if len(div_elements) >= 3:
-    third_div_text = div_elements[2].text
-    print(third_div_text)
-else:
-    print("Not enough 'literator' elements found")
+emails={"Archit":"architkush1000@gmail.com"}
+for i in range(int(len(div_elements)/8)):
+    if div_elements[8*i+3].text== "No link":
+        emails[div_elements[8*i+1].text]=div_elements[8*i+2].text
+# Example of interacting with local storage
+
+password="byao wybx mihv slmu"
+
+connection = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
+connection.starttls()
+connection.login(user=email,password=password)
+def message(name):
+    message_=f"Subject: Complete Your Sign-Up Details \n\n Dear {name},\nWe noticed that you haven't completed your sign-up details yet. To take advantage of the exciting opportunities we have, please complete your profile as soon as possible. New opportunities are added every day, and one of them could be just right for you!\nThank you for your attention to this matter. We look forward to seeing your completed profile and helping you find the perfect opportunity.\n\nBest regards,\nSupport team ,\nEazeplace"
+    msg_clean = ''.join(char if ord(char) < 128 else ' ' for char in message_)
+    
+    return msg_clean
+for key in emails:
+    connection.sendmail(from_addr=email,to_addrs=emails[key],msg=message(key).encode('utf-8'))
+connection.quit()
 
 # Close the browser
 driver.quit()
+
