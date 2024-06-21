@@ -6,12 +6,17 @@ on:
     - cron: "15 19 * * *" # Runs every day at 7:20 PM UTC (12:50 AM IST)
 
 jobs:
-  build:
+  setup:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14' # Specify Node.js 20 or newer
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -39,7 +44,14 @@ jobs:
           sudo dpkg -i google-chrome-stable_current_amd64.deb
           sudo apt-get -f install
 
+  run-selenium:
+    runs-on: ubuntu-latest
+    needs: setup
+
+    steps:
       - name: Run Selenium script
         run: |
           Xvfb :99 & export DISPLAY=:99
           python mail_whatsapp_bot.py
+
+      # Add cleanup steps if needed
