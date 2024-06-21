@@ -7,15 +7,16 @@ from selenium.webdriver.support import expected_conditions as EC
 import smtplib
 
 # Setup Chrome options
-options = Options()
-options.add_argument("--start-maximized")
-options.add_argument("--enable-local-storage")  # Ensuring local storage is enabled
+chrome_options = Options()
+chrome_options.add_argument("--headless")
+chrome_options.add_argument("--disable-gpu")
+
+# Initialize WebDriver
+driver = webdriver.Chrome(options=chrome_options)
 
 # Specify the path to the ChromeDriver executable
-service = Service(executable_path="C:\\Users\\i_sar\\Downloads\\chromedriver-win64\\chromedriver-win64\\chromedriver.exe")
 
 # Initialize the WebDriver
-driver = webdriver.Chrome(service=service, options=options)
 
 # Navigate to the login page
 driver.get('https://eazeplace.com/login')
@@ -60,7 +61,7 @@ connection = smtplib.SMTP("smtp.gmail.com", 587, timeout=30)
 connection.starttls()
 connection.login(user=email,password=password)
 def message(name):
-    message_=f"Subject: Complete Your Sign-Up Details \n\n Dear {name},\nWe noticed that you haven't completed your sign-up details yet. To take advantage of the exciting opportunities we have, please complete your profile as soon as possible. New opportunities are added every day, and one of them could be just right for you!\nThank you for your attention to this matter. We look forward to seeing your completed profile and helping you find the perfect opportunity.\n\nBest regards,\nSupport team ,\nEazeplace"
+    message_=f"Subject: Complete Your Resume Details  \n\n Dear {name},\n\nIt seems like you haven't completed your resume details or perhaps you haven't provided your proof links yet. \nWe encourage you to complete this process so that you can apply for exciting opportunities waiting for you.\nTake this step today and one of these opportunities might be the perfect match for you.\n\nBest regards,\nSupport Team,\nEazeplace"
     msg_clean = ''.join(char if ord(char) < 128 else ' ' for char in message_)
     
     return msg_clean
@@ -70,4 +71,3 @@ connection.quit()
 
 # Close the browser
 driver.quit()
-
