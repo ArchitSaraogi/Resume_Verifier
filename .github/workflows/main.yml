@@ -3,7 +3,7 @@ name: Run Selenium Daily
 on:
   workflow_dispatch:
   schedule:
-    - cron: "12 19 * * *" # Runs every day at 7:20 PM UTC (12:50 AM IST)
+    - cron: "50 19 * * *" # Runs every day at 7:20 PM UTC (12:50 AM IST)
 
 jobs:
   setup:
