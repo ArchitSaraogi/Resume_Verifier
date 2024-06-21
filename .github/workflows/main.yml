@@ -3,7 +3,7 @@ name: Run Selenium Daily
 on:
   workflow_dispatch:
   schedule:
-    - cron: "10 20 * * *" # Runs every day at 1:30 AM IST (8:00 PM UTC)
+    - cron: "30 19 * * *" # Runs every day at 1:30 AM IST (8:00 PM UTC)
 
 jobs:
   setup:
@@ -11,15 +11,15 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2.4.3
+        uses: actions/checkout@v2
 
       - name: Set up Node.js
-        uses: actions/setup-node@v2.5.0
+        uses: actions/setup-node@v2.5.1
         with:
           node-version: '14' # Specify Node.js 20 or newer
 
       - name: Set up Python
-        uses: actions/setup-python@v2.2.3
+        uses: actions/setup-python@v2.2.5
         with:
           python-version: '3.x'
 
@@ -53,5 +53,3 @@ jobs:
         run: |
           Xvfb :99 & export DISPLAY=:99
           python mail_whatsapp_bot.py
-
-      # Add cleanup steps if needed
