@@ -19,7 +19,7 @@ jobs:
           node-version: '14' # Specify Node.js 20 or newer
 
       - name: Set up Python
-        uses: actions/setup-python@v2.2.4
+        uses: actions/setup-python@v2
         with:
           python-version: '3.x'
 
