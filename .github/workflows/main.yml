@@ -1,8 +1,9 @@
-ame: Run Selenium Daily
+name: Run Selenium Daily
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "15 19 * * *" # Runs every day at 7:20 PM UTC (12:50 AM IST)
 
 jobs:
   build:
@@ -41,5 +42,4 @@ jobs:
       - name: Run Selenium script
         run: |
           Xvfb :99 & export DISPLAY=:99
-          python test_script.py
-          
+          python mail_whatsapp_bot.py
